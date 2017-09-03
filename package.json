@@ -1,0 +1,19 @@
+{
+  "name": "digilib-iiif-migrate",
+  "version": "1.0.0",
+  "description": "Convert all digilib image links to IIIF",
+  "main": "index.js",
+  "repository": "https://github.com/telota/digilib-iiif-migrate.git",
+  "author": "opohl@bbaw.de",
+  "license": "MIT",
+  "devDependencies": {
+    "ava": "^0.22.0",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-env": "^1.6.0",
+    "webpack": "^3.5.5"
+  },
+  "scripts": {
+    "test" : "node_modules/.bin/ava tests"
+  }
+}
