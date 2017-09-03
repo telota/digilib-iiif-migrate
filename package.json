@@ -9,11 +9,13 @@
   "devDependencies": {
     "ava": "^0.22.0",
     "babel-core": "^6.26.0",
+    "babel-eslint": "^7.2.3",
     "babel-loader": "^7.1.2",
     "babel-preset-env": "^1.6.0",
+    "eslint": "^4.6.0",
     "webpack": "^3.5.5"
   },
   "scripts": {
-    "test" : "node_modules/.bin/ava tests"
+    "test": "node_modules/.bin/ava tests"
   }
 }
