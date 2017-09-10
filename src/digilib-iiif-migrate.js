@@ -38,12 +38,22 @@ module.exports = {
 
     /**
      * Convert the filepath from the digilib URL
-     * @param {string}digilibUrl - digilib url to convert file path from
+     * @param {string} digilibUrl - digilib URL to convert file path from
      */
     convertFilePath : (digilibUrl) => {
 
         let filepath = module.exports.extractFilePath(digilibUrl);
         return filepath.replace(/\//g, "!");
+
+    },
+
+    /**
+     * Extract parameters from the provided digilib URL
+     * @param {string} digilibUrl - digilib url to extract parameters from
+     */
+    extractParameters : (digilibUrl) => {
+
+        // TODO object containing parameters
 
     },
 
