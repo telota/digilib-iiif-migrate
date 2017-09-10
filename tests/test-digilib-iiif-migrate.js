@@ -41,13 +41,6 @@ test('it retrieves the IIIF scaler base', t => {
 
 });
 
-test('it extracts the file path from an old scaler link', t => {
-
-    let match = "silo10/Koran/Umwelttexte/Yazdgerd%20III.jpg";
-    t.is(match, dim.extractFilePath(validOldUrl));
-
-});
-
 test('it converts the file path to the digilib IIIF format', t => {
 
     let match = "silo10!Koran!Umwelttexte!Yazdgerd%20III.jpg";
@@ -58,5 +51,17 @@ test('it converts the file path to the digilib IIIF format', t => {
 test('it converts the old scaler URL to IIIF', t => {
 
     t.is(validIiifUrl, dim.getIiifFull(validOldUrl));
+
+});
+
+test('it extracts parameters as an object', t => {
+
+    let targetFileName = "/silo10/Koran/Umwelttexte/Yazdgerd%20III.jpg";
+    let targetWidth = '500';
+
+    let parameters = dim.extractParameters(validOldUrl);
+
+    t.is(targetFileName, parameters.fn);
+    t.is(targetWidth, parameters.dw);
 
 });

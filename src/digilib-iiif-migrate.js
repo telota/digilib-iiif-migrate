@@ -26,23 +26,18 @@ module.exports = {
     },
 
     /**
-     * Extract file path from digilib URL
-     * @param {string} digilibUrl - digilib url to retrieve file path from
-     */
-    extractFilePath : (digilibUrl) => {
-
-        let pattern = /fn=\/(.*?)\&/;
-        return digilibUrl.match(pattern)[1];
-
-    },
-
-    /**
      * Convert the filepath from the digilib URL
      * @param {string} digilibUrl - digilib URL to convert file path from
      */
     convertFilePath : (digilibUrl) => {
 
-        let filepath = module.exports.extractFilePath(digilibUrl);
+        let filepath = module.exports.extractParameters(digilibUrl).fn;
+
+        // Remove leading slashes
+        if (filepath[0] === "/") {
+            filepath = filepath.substr(1);
+        }
+
         return filepath.replace(/\//g, "!");
 
     },
@@ -53,7 +48,18 @@ module.exports = {
      */
     extractParameters : (digilibUrl) => {
 
-        // TODO object containing parameters
+        let parameters = {};
+
+        // Get last part of parameter string
+        let parameterString = digilibUrl.split("?")[1];
+
+        // Map parameters to key value pair
+        parameterString.split("&").forEach((parameter) => {
+            let pair = parameter.split("=");
+            parameters[pair[0]] = pair[1];
+        });
+
+        return parameters;
 
     },
 
