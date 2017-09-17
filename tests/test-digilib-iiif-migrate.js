@@ -65,3 +65,43 @@ test('it extracts parameters as an object', t => {
     t.is(targetWidth, parameters.dw);
 
 });
+
+test('it converts the region parameters to full when no region parameters are specified at all', t => {
+
+    let scalerUrl = "https://digilib.bbaw.de/digitallibrary/servlet/Scaler?fn=/silo10/Koran/Umwelttexte/Yazdgerd%20III.jpg&wx=0.1&wy=0.15&ww=0.43&wh=0.354";
+
+    let targetRegion = "pct:10,15,43,35.4";
+
+    t.is(targetRegion, dim.getIiifRegion(scalerUrl));
+
+
+});
+
+test('it converts the region parameters to full when not all region parameters are specified', t => {
+
+});
+
+
+test('it converts the region parameters correctly when all region parameters are specified', t => {
+
+});
+
+test('it converts the size parameters to full when no size paramters are specified at all ', t => {
+
+});
+
+test('it converts the size parameters correctly when height and width are specified', t => {
+
+});
+
+test('it converts the size parameters correctly when only height is specified', t => {
+
+});
+
+test('it converts the size parameters correctly when only width is specified', t => {
+
+});
+
+test('it applies the scaling factor to the size conversion correctly', t => {
+
+});
