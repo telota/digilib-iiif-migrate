@@ -8,14 +8,34 @@
   "license": "MIT",
   "devDependencies": {
     "ava": "^0.22.0",
+    "babel": "^6.23.0",
+    "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
     "babel-eslint": "^7.2.3",
     "babel-loader": "^7.1.2",
     "babel-preset-env": "^1.6.0",
-    "eslint": "^4.6.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-register": "^6.26.0",
+    "eslint": "4.9.0",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "2.7.0",
     "webpack": "^3.5.5"
   },
   "scripts": {
     "test": "node_modules/.bin/ava tests"
+  },
+  "ava": {
+    "files": [
+      "tests/*js"
+    ],
+    "source": [
+      "src/*.js"
+    ],
+    "concurrency": 5,
+    "failFast": true,
+    "babel": "inherit",
+    "require": [
+      "babel-register"
+    ]
   }
 }
