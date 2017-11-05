@@ -2,7 +2,8 @@ const has = Object.prototype.hasOwnProperty;
 
 /**
  * Get scaler base
- * @param {string} digilibUrl - digilib url to retrieve base from
+ * @param {string} digilibUrl - digilib URL to retrieve base from
+ * @returns {string} - IIIF scaler URL of same service
  */
 function getIiifScaler(digilibUrl) {
   return `${digilibUrl.substr(0, digilibUrl.indexOf('Scaler') + 'Scaler'.length)}/IIIF/`;
@@ -11,6 +12,7 @@ function getIiifScaler(digilibUrl) {
 /**
  * Extract parameters from the provided digilib URL
  * @param {string} digilibUrl - digilib URL to extract parameters from
+ * @returns {object} - parameters used in the URL
  */
 function extractParameters(digilibUrl) {
   const parameters = {};
@@ -22,7 +24,8 @@ function extractParameters(digilibUrl) {
   parameterString.split('&').forEach((parameter) => {
     const pair = parameter.split('=');
 
-    parameters[pair[0]] = pair[1];
+    const [prop, val] = pair;
+    parameters[prop] = val;
   });
 
   return parameters;
@@ -31,6 +34,7 @@ function extractParameters(digilibUrl) {
 /**
  * Convert the filepath from the digilib URL
  * @param {string} digilibUrl - digilib URL to convert file path from
+ * @returns {string} - digilib IIIF compliant file path format
  */
 function convertFilePath(digilibUrl) {
   let filepath = extractParameters(digilibUrl).fn;
@@ -46,6 +50,7 @@ function convertFilePath(digilibUrl) {
 /**
  * Get the full IIIF link of the image
  * @param {string} digilibUrl - digilib URL that should be checked
+ * @returns {string} - digilib IIIF URL to the full sized image
  */
 function getIiifFull(digilibUrl) {
   const base = getIiifScaler(digilibUrl);
@@ -57,8 +62,8 @@ function getIiifFull(digilibUrl) {
 
 /**
  * Convert the region parameters to IIIF
- * @param {string} digilibUrl -
- * @returns {string}
+ * @param {string} digilibUrl - digilib URL to extract the region parameters from
+ * @returns {string} - IIIF region string
  */
 function getIiifRegion(digilibUrl) {
   const region = 'full';
@@ -78,31 +83,9 @@ function getIiifRegion(digilibUrl) {
 }
 
 /**
- * Convert scaler parameters to IIIF
- * @param {string} digilibUrl - digilib URL to extract parameters from
- */
-function convertParameters(digilibUrl) {
-  const region = getIiifRegion(digilibUrl);
-  const size = '';
-  const rotation = '';
-}
-
-/**
- * Get the IIIF link of the image with the same parameters as the old scaler URL
- * @param {string} digilibUrl - digilib URL to transform
- */
-function getIiifModified(digilibUrl) {
-  const base = getIiifScaler(digilibUrl);
-  const filepath = convertFilePath(digilibUrl);
-  const modifiedParameters = convertParameters(digilibUrl);
-
-  return base + filepath + modifiedParameters;
-}
-
-/**
  * Convert the size parameters to IIIF
- * @param digilibUrl
- * @returns {string}
+ * @param digilibUrl - digilib URL to extract the size parameters from
+ * @returns {string} - IIIF size string
  */
 function getIiifSize(digilibUrl) {
   const size = 'full';
@@ -127,15 +110,57 @@ function getIiifSize(digilibUrl) {
 
   if (has.call(parameters, 'dh')) {
     const height = Math.round((parseInt(parameters.dh, 10) * scalingFactor)).toString();
-    return `${height.toString()}`;
+    return `,${height.toString()}`;
   }
 
   return size;
 }
 
 /**
+ * @param digilibUrl - digilib URL to extract rotation parameter from
+ * @returns {string} - IIIF rotation string
+ */
+function getIiifRotation(digilibUrl) {
+  const parameters = extractParameters(digilibUrl);
+
+  let rotation = 0;
+
+  if (has.call(parameters, 'rot')) {
+    rotation = parameters.rot;
+  }
+
+  return rotation.toString();
+}
+
+/**
+ * Convert scaler parameters to IIIF
+ * @param {string} digilibUrl - digilib URL to extract parameters from
+ */
+function convertParameters(digilibUrl) {
+  const region = getIiifRegion(digilibUrl);
+  const size = getIiifSize(digilibUrl);
+  const rotation = getIiifRotation(digilibUrl);
+
+  return `/${region}/${size}/${rotation}/`;
+}
+
+/**
+ * Get the IIIF link of the image with the same parameters as the old scaler URL
+ * @param {string} digilibUrl - digilib URL to transform
+ * @returns {string} - modified digilib URL
+ */
+function getIiifModified(digilibUrl) {
+  const base = getIiifScaler(digilibUrl);
+  const filepath = convertFilePath(digilibUrl);
+  const modifiedParameters = convertParameters(digilibUrl);
+
+  return `${base}${filepath}${modifiedParameters}default.jpg`;
+}
+
+/**
  * Check whether the provided url is a digilib scaler URL
  * @param {string} digilibUrl - digilib URL that should be checked
+ * @returns {boolean}
  */
 function isDigilibScaler(digilibUrl) {
   return digilibUrl.includes('Scaler');
@@ -144,6 +169,7 @@ function isDigilibScaler(digilibUrl) {
 /**
  * Check whether the provided url is an old fashioned digilib scaler
  * @param {string} digilibUrl - digilib URL that should be checked
+ * @returns {boolean}
  */
 function isDigilibOldScaler(digilibUrl) {
   return digilibUrl.includes('Scaler?fn=');
@@ -152,6 +178,7 @@ function isDigilibOldScaler(digilibUrl) {
 /**
  * Check whether the the provided url is already IIIF compliant
  * @param  {string} digilibUrl
+ * @returns {boolean}
  */
 function isDigilibIiifScaler(digilibUrl) {
   return digilibUrl.includes('Scaler/IIIF/');
@@ -166,6 +193,7 @@ export default {
   convertParameters,
   getIiifRegion,
   getIiifSize,
+  getIiifRotation,
   isDigilibScaler,
   isDigilibOldScaler,
   isDigilibIiifScaler,

@@ -78,11 +78,64 @@ test('it converts the size parameters to full when no size paramters are specifi
 });
 
 test('it converts the size parameters correctly when height and width are specified', (t) => {
-  const scalerUrl = 'https://digilib.bbaw.de/digitallibrary/servlet/Scaler?fn=/silo10/Koran/Umwelttexte/Yazdgerd%20III.jpg&wx=0.1&wy=0.15&ww=0.43&wh=0.354&dw=0.57&dh=0.47';
+  const scalerUrl = 'https://digilib.bbaw.de/digitallibrary/servlet/Scaler?fn=/silo10/Koran/Umwelttexte/Yazdgerd%20III.jpg&wx=0.1&wy=0.15&ww=0.43&wh=0.354&dw=500&dh=400';
+
+  const targetSize = '500,400';
+  t.is(targetSize, dim.getIiifSize(scalerUrl));
 });
 
-test.todo('it converts the size parameters correctly when only height is specified');
+test('it converts the size parameters correctly when only width is specified', (t) => {
+  const scalerUrl = 'https://digilib.bbaw.de/digitallibrary/servlet/Scaler?fn=/silo10/Koran/Umwelttexte/Yazdgerd%20III.jpg&wx=0.1&wy=0.15&ww=0.43&wh=0.354&dw=550';
 
-test.todo('it converts the size parameters correctly when only width is specified');
+  const targetSize = '550,';
+  t.is(targetSize, dim.getIiifSize(scalerUrl));
+});
 
-test.todo('it applies the scaling factor to the size conversion correctly');
+test('it converts the size parameters correctly when only height is specified', (t) => {
+  const scalerUrl = 'https://digilib.bbaw.de/digitallibrary/servlet/Scaler?fn=/silo10/Koran/Umwelttexte/Yazdgerd%20III.jpg&wx=0.1&wy=0.15&ww=0.43&wh=0.354&dh=400';
+
+  const targetSize = ',400';
+  t.is(targetSize, dim.getIiifSize(scalerUrl));
+});
+
+test('it applies the scaling factor to the size conversion for both width and height', (t) => {
+  const scalerUrl = 'https://digilib.bbaw.de/digitallibrary/servlet/Scaler?fn=/silo10/Koran/Umwelttexte/Yazdgerd%20III.jpg&wx=0.1&wy=0.15&ww=0.43&wh=0.354&dw=500&dh=400&ws=2';
+
+  const targetSize = '1000,800';
+  t.is(targetSize, dim.getIiifSize(scalerUrl));
+});
+
+test('it applies the scaling factor to the size conversion if only the width is specified', (t) => {
+  const scalerUrl = 'https://digilib.bbaw.de/digitallibrary/servlet/Scaler?fn=/silo10/Koran/Umwelttexte/Yazdgerd%20III.jpg&wx=0.1&wy=0.15&ww=0.43&wh=0.354&dw=550&ws=3';
+
+  const targetSize = '1650,';
+  t.is(targetSize, dim.getIiifSize(scalerUrl));
+});
+
+test('it applies the scaling factor to the size conversion if only the height height is specified', (t) => {
+  const scalerUrl = 'https://digilib.bbaw.de/digitallibrary/servlet/Scaler?fn=/silo10/Koran/Umwelttexte/Yazdgerd%20III.jpg&wx=0.1&wy=0.15&ww=0.43&wh=0.354&dh=400&ws=0.5';
+
+  const targetSize = ',200';
+  t.is(targetSize, dim.getIiifSize(scalerUrl));
+});
+
+test('it correctly converts the rotation parameter', (t) => {
+  const scalerUrl = 'https://digilib.bbaw.de/digitallibrary/servlet/Scaler?fn=/silo10/Koran/Umwelttexte/Yazdgerd%20III.jpg&wx=0.1&wy=0.15&ww=0.43&wh=0.354&rot=85';
+
+  const targetRotation = '85';
+  t.is(targetRotation, dim.getIiifRotation(scalerUrl));
+});
+
+test('it converts all important parameters to the parameter string', (t) => {
+  const scalerUrl = 'https://digilib.bbaw.de/digitallibrary/servlet/Scaler?fn=/silo10/Koran/Umwelttexte/Yazdgerd%20III.jpg&wx=0.1&wy=0.15&ww=0.43&wh=0.354&dw=500&dh=400&ws=2&rot=45';
+
+  const target = '/pct:10,15,43,35.4/1000,800/45/';
+  t.is(target, dim.convertParameters(scalerUrl));
+});
+
+test('it converts the digilib url to IIIF', (t) => {
+  const scalerUrl = 'https://digilib.bbaw.de/digitallibrary/servlet/Scaler?fn=/silo10/Koran/Umwelttexte/Yazdgerd%20III.jpg&wx=0.1&wy=0.15&ww=0.43&wh=0.354&dw=500&dh=400&ws=2&rot=45';
+
+  const iiifUrl = 'https://digilib.bbaw.de/digitallibrary/servlet/Scaler/IIIF/silo10!Koran!Umwelttexte!Yazdgerd%20III.jpg/pct:10,15,43,35.4/1000,800/45/default.jpg';
+  t.is(iiifUrl, dim.getIiifModified(scalerUrl));
+});
