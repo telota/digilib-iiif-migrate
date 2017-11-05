@@ -10,6 +10,33 @@ function getIiifScaler(digilibUrl) {
 }
 
 /**
+ * Check whether the provided url is a digilib scaler URL
+ * @param {string} digilibUrl - digilib URL that should be checked
+ * @returns {boolean}
+ */
+function isDigilibScaler(digilibUrl) {
+  return digilibUrl.includes('Scaler');
+}
+
+/**
+ * Check whether the provided url is an old fashioned digilib scaler
+ * @param {string} digilibUrl - digilib URL that should be checked
+ * @returns {boolean}
+ */
+function isDigilibOldScaler(digilibUrl) {
+  return digilibUrl.includes('Scaler?fn=');
+}
+
+/**
+ * Check whether the the provided url is already IIIF compliant
+ * @param  {string} digilibUrl
+ * @returns {boolean}
+ */
+function isDigilibIiifScaler(digilibUrl) {
+  return digilibUrl.includes('Scaler/IIIF/');
+}
+
+/**
  * Extract parameters from the provided digilib URL
  * @param {string} digilibUrl - digilib URL to extract parameters from
  * @returns {object} - parameters used in the URL
@@ -53,6 +80,10 @@ function convertFilePath(digilibUrl) {
  * @returns {string} - digilib IIIF URL to the full sized image
  */
 function getIiifFull(digilibUrl) {
+  if (!isDigilibOldScaler(digilibUrl)) {
+    return digilibUrl;
+  }
+
   const base = getIiifScaler(digilibUrl);
   const filepath = convertFilePath(digilibUrl);
   const fullParameters = '/full/full/0/default.jpg';
@@ -150,6 +181,10 @@ function convertParameters(digilibUrl) {
  * @returns {string} - modified digilib URL
  */
 function getIiifModified(digilibUrl) {
+  if (!isDigilibOldScaler(digilibUrl)) {
+    return digilibUrl;
+  }
+
   const base = getIiifScaler(digilibUrl);
   const filepath = convertFilePath(digilibUrl);
   const modifiedParameters = convertParameters(digilibUrl);
@@ -158,30 +193,35 @@ function getIiifModified(digilibUrl) {
 }
 
 /**
- * Check whether the provided url is a digilib scaler URL
- * @param {string} digilibUrl - digilib URL that should be checked
- * @returns {boolean}
+ * Iterate over all anchors (a) in a document and replace
+ * their href values with IIIF digilib values if necessary
  */
-function isDigilibScaler(digilibUrl) {
-  return digilibUrl.includes('Scaler');
+function updateAnchors() {
+  const anchors = document.querySelectorAll('a');
+  [].forEach.call(anchors, (anchor) => {
+    const updatedLink = getIiifModified(anchor.getAttribute('href'));
+    anchor.setAttribute('href', updatedLink);
+  });
 }
 
 /**
- * Check whether the provided url is an old fashioned digilib scaler
- * @param {string} digilibUrl - digilib URL that should be checked
- * @returns {boolean}
+ * Iterate over all images (img) in a document and replace
+ * their href values with IIIF digilib values if necessary
  */
-function isDigilibOldScaler(digilibUrl) {
-  return digilibUrl.includes('Scaler?fn=');
+function updateImages() {
+  const images = document.querySelectorAll('img');
+  [].forEach.call(images, (image) => {
+    const updatedSource = getIiifModified(image.getAttribute('src'));
+    image.setAttribute('src', updatedSource);
+  });
 }
 
 /**
- * Check whether the the provided url is already IIIF compliant
- * @param  {string} digilibUrl
- * @returns {boolean}
+ * Apply IIIF DOM updates for anchors and image tags
  */
-function isDigilibIiifScaler(digilibUrl) {
-  return digilibUrl.includes('Scaler/IIIF/');
+function updateDOM() {
+  updateAnchors();
+  updateImages();
 }
 
 export default {
@@ -197,5 +237,8 @@ export default {
   isDigilibScaler,
   isDigilibOldScaler,
   isDigilibIiifScaler,
+  updateAnchors,
+  updateImages,
+  updateDOM,
 };
 

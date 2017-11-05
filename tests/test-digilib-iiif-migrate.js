@@ -139,3 +139,10 @@ test('it converts the digilib url to IIIF', (t) => {
   const iiifUrl = 'https://digilib.bbaw.de/digitallibrary/servlet/Scaler/IIIF/silo10!Koran!Umwelttexte!Yazdgerd%20III.jpg/pct:10,15,43,35.4/1000,800/45/default.jpg';
   t.is(iiifUrl, dim.getIiifModified(scalerUrl));
 });
+
+test('it skips the conversion if it does not detect the scaler', (t) => {
+  const fakeUrl = 'www.bbaw.de';
+
+  t.is(fakeUrl, dim.getIiifModified(fakeUrl));
+  t.is(fakeUrl, dim.getIiifFull(fakeUrl));
+})
